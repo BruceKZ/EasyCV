@@ -6,14 +6,40 @@ import Projects from './Projects.vue'
 import Skills from './Skills.vue'
 import Misc from './Misc.vue'
 import Awards from './Awards.vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { ChevronDown, ChevronRight, User, GraduationCap, Briefcase, FolderGit2, Code2, Trophy, MoreHorizontal } from 'lucide-vue-next'
 
-const activeSection = ref<string | null>('basics')
+const STORAGE_KEY_ACTIVE_SECTION = 'easycv-editor-active-section'
+
+// Restore state from localStorage
+const getSavedActiveSection = (): string | null => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_ACTIVE_SECTION)
+    return saved ? saved : 'basics'
+  } catch (e) {
+    console.error('Failed to load active section from localStorage:', e)
+    return 'basics'
+  }
+}
+
+const activeSection = ref<string | null>(getSavedActiveSection())
 
 const toggleSection = (section: string) => {
   activeSection.value = activeSection.value === section ? null : section
 }
+
+// Watch activeSection changes and save to localStorage
+watch(activeSection, (newValue) => {
+  try {
+    if (newValue === null) {
+      localStorage.removeItem(STORAGE_KEY_ACTIVE_SECTION)
+    } else {
+      localStorage.setItem(STORAGE_KEY_ACTIVE_SECTION, newValue)
+    }
+  } catch (e) {
+    console.error('Failed to save active section to localStorage:', e)
+  }
+})
 
 const sections = [
   { id: 'basics', labelKey: 'editor.sections.basics', icon: User, component: Basics },
