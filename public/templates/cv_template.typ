@@ -1,48 +1,7 @@
 #import "chicv.typ": *
 
-#let cv(private_info, labels) = {
-  show: chicv
-  set par(justify: true, leading: 0.7em)
-  set list(marker: ([•], [‣]), spacing: 0.75em)
-
-  let basics = private_info.at("basics", default: (:))
-  let resume_name = basics.at("name", default: "")
-  let resume_phone = basics.at("phone", default: "")
-  let resume_email = basics.at("email", default: "")
-  let resume_github = basics.at("github", default: "")
-  let resume_website = basics.at("website", default: "")
-
-  let scope = (
-      redact: redact,
-      fa: fa,
-      link: link,
-      emph: emph,
-      linebreak: linebreak,
-      ghrepo: ghrepo,
-      phone: phone,
-      envelope: envelope,
-      github: github,
-      globe: globe,
-      graduation-cap: graduation-cap,
-      briefcase: briefcase,
-      project-diagram: project-diagram,
-      code: code,
-      laptop: laptop,
-      th: th,
-      trophy: trophy,
-      rust: rust,
-  )
-
-  [= #redact(alter: "roife")[#resume_name]]
-
-  let contact_info = ()
-  if resume_phone != "" { contact_info.push([#fa[#phone] #redact(mark: true)[#resume_phone]]) }
-  if resume_email != "" { contact_info.push([#fa[#envelope] #resume_email]) }
-  if resume_github != "" { contact_info.push([#fa[#github] #link("https://github.com/" + resume_github)[#resume_github]]) }
-  if resume_website != "" { contact_info.push([#fa[#globe] #link("https://" + resume_website)[#resume_website]]) }
-
-  contact_info.join(" | ")
-
+// Helper functions for rendering each section
+#let render_education(private_info, labels, scope) = {
   if private_info.at("education", default: ()).len() > 0 {
     [== #fa[#graduation-cap] #labels.education]
 
@@ -66,7 +25,9 @@
         ]
     }
   }
+}
 
+#let render_work(private_info, labels, scope) = {
   if private_info.at("work", default: ()).len() > 0 {
     [== #fa[#briefcase] #labels.work]
 
@@ -89,16 +50,9 @@
         ]
     }
   }
+}
 
-  if private_info.at("awards", default: ()).len() > 0 {
-    [== #fa[#trophy] #labels.awards]
-
-    let awards = private_info.at("awards", default: ())
-    if awards != none and awards != () {
-        eval(awards.join("\n"), mode: "markup", scope: scope)
-    }
-  }
-
+#let render_projects(private_info, labels, scope) = {
   if private_info.at("projects", default: ()).len() > 0 {
     [== #fa[#project-diagram] #labels.projects]
 
@@ -138,7 +92,9 @@
         #eval(private_info.at("open_source", default: ()).join("\n"), mode: "markup", scope: scope)
     ]
   }
+}
 
+#let render_skills(private_info, labels, scope) = {
   if private_info.at("skills", default: ()).len() > 0 {
     [== #fa[#laptop.code] #labels.skills]
 
@@ -161,10 +117,85 @@
         }).flatten()
     )
   }
+}
 
+#let render_awards(private_info, labels, scope) = {
+  if private_info.at("awards", default: ()).len() > 0 {
+    [== #fa[#trophy] #labels.awards]
+
+    let awards = private_info.at("awards", default: ())
+    if awards != none and awards != () {
+        eval(awards.join("\n"), mode: "markup", scope: scope)
+    }
+  }
+}
+
+#let render_misc(private_info, labels, scope) = {
   if private_info.at("misc", default: ()).len() > 0 {
     [== #fa[#th.list] #labels.misc]
 
     eval(private_info.at("misc", default: ()).join("\n"), mode: "markup", scope: scope)
+  }
+}
+
+#let cv(private_info, labels, section_order: ()) = {
+  show: chicv
+  set par(justify: true, leading: 0.7em)
+  set list(marker: ([•], [‣]), spacing: 0.75em)
+
+  let basics = private_info.at("basics", default: (:))
+  let resume_name = basics.at("name", default: "")
+  let resume_phone = basics.at("phone", default: "")
+  let resume_email = basics.at("email", default: "")
+  let resume_github = basics.at("github", default: "")
+  let resume_website = basics.at("website", default: "")
+
+  let scope = (
+      redact: redact,
+      fa: fa,
+      link: link,
+      emph: emph,
+      linebreak: linebreak,
+      ghrepo: ghrepo,
+      phone: phone,
+      envelope: envelope,
+      github: github,
+      globe: globe,
+      graduation-cap: graduation-cap,
+      briefcase: briefcase,
+      project-diagram: project-diagram,
+      code: code,
+      laptop: laptop,
+      th: th,
+      trophy: trophy,
+      rust: rust,
+  )
+
+  // Basics section (always first)
+  [= #redact(alter: "roife")[#resume_name]]
+
+  let contact_info = ()
+  if resume_phone != "" { contact_info.push([#fa[#phone] #redact(mark: true)[#resume_phone]]) }
+  if resume_email != "" { contact_info.push([#fa[#envelope] #resume_email]) }
+  if resume_github != "" { contact_info.push([#fa[#github] #link("https://github.com/" + resume_github)[#resume_github]]) }
+  if resume_website != "" { contact_info.push([#fa[#globe] #link("https://" + resume_website)[#resume_website]]) }
+
+  contact_info.join(" | ")
+
+  // Render sections in the specified order
+  for section_id in section_order {
+    if section_id == "education" {
+      render_education(private_info, labels, scope)
+    } else if section_id == "work" {
+      render_work(private_info, labels, scope)
+    } else if section_id == "projects" {
+      render_projects(private_info, labels, scope)
+    } else if section_id == "skills" {
+      render_skills(private_info, labels, scope)
+    } else if section_id == "awards" {
+      render_awards(private_info, labels, scope)
+    } else if section_id == "misc" {
+      render_misc(private_info, labels, scope)
+    }
   }
 }
