@@ -1,24 +1,10 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
 import { Trash2, Plus, X } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const store = useResumeStore()
-
-const labels = computed(() => {
-  const isCn = store.language === 'cn'
-  return {
-    school: isCn ? '学校' : 'School',
-    degree: isCn ? '学位' : 'Degree',
-    time: isCn ? '时间' : 'Time',
-    startDate: isCn ? '开始时间' : 'Start Date',
-    endDate: isCn ? '结束时间' : 'End Date',
-    present: isCn ? '至今' : 'Present',
-    details: isCn ? '详情' : 'Details',
-    addDetail: isCn ? '添加详情' : 'Add Detail',
-    addEducation: isCn ? '添加教育经历' : 'Add Education'
-  }
-})
+const { t } = useI18n()
 
 const addEducation = () => {
   store.resumeData.education.push({
@@ -55,7 +41,7 @@ const parseDate = (dateStr: string) => {
 
 const updateTime = (index: number, start: string, end: string, isPresent: boolean) => {
   const formatDate = (d: string) => d.replace('-', '.')
-  const endStr = isPresent ? (store.language === 'cn' ? '至今' : 'Present') : formatDate(end)
+  const endStr = isPresent ? t('editor.education.present') : formatDate(end)
   store.resumeData.education[index]!.time = `${formatDate(start)} - ${endStr}`
 }
 
@@ -96,7 +82,7 @@ const setIsPresent = (index: number, value: boolean) => {
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.school }}</label>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.education.school') }}</label>
           <input 
             v-model="edu.school" 
             class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
@@ -106,7 +92,7 @@ const setIsPresent = (index: number, value: boolean) => {
         </div>
         
         <div class="space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.degree }}</label>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.education.degree') }}</label>
           <input 
             v-model="edu.degree" 
             class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
@@ -117,7 +103,7 @@ const setIsPresent = (index: number, value: boolean) => {
       </div>
       
       <div class="mb-4 space-y-1">
-        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.time }}</label>
+        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.education.time') }}</label>
         <div class="flex items-center gap-2">
           <input 
             type="month"
@@ -145,13 +131,13 @@ const setIsPresent = (index: number, value: boolean) => {
               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               :id="'present-edu-' + index"
             />
-            <label :for="'present-edu-' + index" class="text-sm text-gray-700 select-none">{{ labels.present }}</label>
+            <label :for="'present-edu-' + index" class="text-sm text-gray-700 select-none">{{ $t('editor.education.present') }}</label>
           </div>
         </div>
       </div>
 
       <div class="space-y-2">
-        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.details }}</label>
+        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.education.details') }}</label>
         <div v-for="(_detail, dIndex) in edu.details" :key="dIndex" class="flex gap-2 items-start group/detail">
            <div class="flex-1 space-y-2">
              <input 
@@ -172,7 +158,7 @@ const setIsPresent = (index: number, value: boolean) => {
           @click="addDetail(index)" 
           class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 mt-2 px-2 py-1 rounded hover:bg-blue-50 transition-colors w-fit"
         >
-          <Plus class="w-4 h-4" /> {{ labels.addDetail }}
+          <Plus class="w-4 h-4" /> {{ $t('editor.education.addDetail') }}
         </button>
       </div>
     </div>
@@ -181,7 +167,7 @@ const setIsPresent = (index: number, value: boolean) => {
       @click="addEducation" 
       class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-medium"
     >
-      <Plus class="w-5 h-5" /> {{ labels.addEducation }}
+      <Plus class="w-5 h-5" /> {{ $t('editor.education.addEducation') }}
     </button>
   </div>
 </template>
