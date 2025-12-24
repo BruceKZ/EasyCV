@@ -33,11 +33,11 @@ const removeProject = (index: number) => {
 }
 
 const addDetail = (pIndex: number) => {
-  store.resumeData.projects[pIndex].details.push('')
+  store.resumeData.projects[pIndex]!.details.push('')
 }
 
 const removeDetail = (pIndex: number, dIndex: number) => {
-  store.resumeData.projects[pIndex].details.splice(dIndex, 1)
+  store.resumeData.projects[pIndex]!.details.splice(dIndex, 1)
 }
 </script>
 
@@ -100,7 +100,7 @@ const removeDetail = (pIndex: number, dIndex: number) => {
 
       <div class="space-y-2">
         <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.details }}</label>
-        <div v-for="(detail, dIndex) in project.details" :key="dIndex" class="flex gap-2 items-start group/detail">
+        <div v-for="(_detail, dIndex) in project.details" :key="dIndex" class="flex gap-2 items-start group/detail">
            <div class="flex-1 space-y-2">
              <input 
                v-model="project.details[dIndex]" 

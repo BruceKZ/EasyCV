@@ -36,11 +36,11 @@ const removeWork = (index: number) => {
 }
 
 const addDetail = (wIndex: number) => {
-  store.resumeData.work[wIndex].details.push('')
+  store.resumeData.work[wIndex]!.details.push('')
 }
 
 const removeDetail = (wIndex: number, dIndex: number) => {
-  store.resumeData.work[wIndex].details.splice(dIndex, 1)
+  store.resumeData.work[wIndex]!.details.splice(dIndex, 1)
 }
 
 const parseDate = (dateStr: string) => {
@@ -48,9 +48,9 @@ const parseDate = (dateStr: string) => {
   const parts = dateStr.split(' - ')
   if (parts.length !== 2) return { start: '', end: '', isPresent: false }
   
-  const start = parts[0].replace('.', '-')
-  const isPresent = parts[1].toLowerCase() === 'present' || parts[1] === '至今'
-  const end = isPresent ? '' : parts[1].replace('.', '-')
+  const start = parts[0]!.replace('.', '-')
+  const isPresent = parts[1]!.toLowerCase() === 'present' || parts[1] === '至今'
+  const end = isPresent ? '' : parts[1]!.replace('.', '-')
   
   return { start, end, isPresent }
 }
@@ -58,25 +58,25 @@ const parseDate = (dateStr: string) => {
 const updateTime = (index: number, start: string, end: string, isPresent: boolean) => {
   const formatDate = (d: string) => d.replace('-', '.')
   const endStr = isPresent ? (store.language === 'cn' ? '至今' : 'Present') : formatDate(end)
-  store.resumeData.work[index].time = `${formatDate(start)} - ${endStr}`
+  store.resumeData.work[index]!.time = `${formatDate(start)} - ${endStr}`
 }
 
-const getStartDate = (index: number) => parseDate(store.resumeData.work[index].time).start
-const getEndDate = (index: number) => parseDate(store.resumeData.work[index].time).end
-const getIsPresent = (index: number) => parseDate(store.resumeData.work[index].time).isPresent
+const getStartDate = (index: number) => parseDate(store.resumeData.work[index]!.time).start
+const getEndDate = (index: number) => parseDate(store.resumeData.work[index]!.time).end
+const getIsPresent = (index: number) => parseDate(store.resumeData.work[index]!.time).isPresent
 
 const setStartDate = (index: number, value: string) => {
-  const { end, isPresent } = parseDate(store.resumeData.work[index].time)
+  const { end, isPresent } = parseDate(store.resumeData.work[index]!.time)
   updateTime(index, value, end, isPresent)
 }
 
 const setEndDate = (index: number, value: string) => {
-  const { start, isPresent } = parseDate(store.resumeData.work[index].time)
+  const { start, isPresent } = parseDate(store.resumeData.work[index]!.time)
   updateTime(index, start, value, isPresent)
 }
 
 const setIsPresent = (index: number, value: boolean) => {
-  const { start, end } = parseDate(store.resumeData.work[index].time)
+  const { start, end } = parseDate(store.resumeData.work[index]!.time)
   updateTime(index, start, end, value)
 }
 </script>
@@ -164,7 +164,7 @@ const setIsPresent = (index: number, value: boolean) => {
 
       <div class="space-y-2">
         <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.details }}</label>
-        <div v-for="(detail, dIndex) in work.details" :key="dIndex" class="flex gap-2 items-start group/detail">
+        <div v-for="(_detail, dIndex) in work.details" :key="dIndex" class="flex gap-2 items-start group/detail">
            <div class="flex-1 space-y-2">
              <input 
                v-model="work.details[dIndex]" 

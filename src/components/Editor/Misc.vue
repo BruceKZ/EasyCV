@@ -24,7 +24,7 @@ const removeMisc = (index: number) => {
 
 <template>
   <div class="space-y-4">
-    <div v-for="(item, index) in store.resumeData.misc" :key="index" class="flex gap-3 items-start group">
+    <div v-for="(_item, index) in store.resumeData.misc" :key="index" class="flex gap-3 items-start group">
       <div class="flex-1 space-y-2">
         <input 
           v-model="store.resumeData.misc[index]" 
