@@ -3,8 +3,10 @@ import { ref, onMounted, watch } from 'vue'
 import { $typst, loadFonts } from '@myriaddreamin/typst.ts'
 import { useResumeStore } from '../stores/resume'
 import { compileResume } from '../utils/typst'
+import { useI18n } from 'vue-i18n'
 
 const store = useResumeStore()
+const { locale } = useI18n()
 const templateContent = ref('')
 const compiledContent = ref('')
 const loading = ref(false)
@@ -36,7 +38,7 @@ const updatePreview = async () => {
   store.clearMissingKeys() // Clear previous errors
   try {
     // Determine template based on language
-    const templateName = store.language === 'cn' ? 'resume-cn.typ' : 'resume-en.typ'
+    const templateName = locale.value === 'zh-CN' ? 'resume-cn.typ' : 'resume-en.typ'
     const source = await compileResume(templateName, store.resumeData)
     templateContent.value = source
     
@@ -74,7 +76,7 @@ onMounted(async () => {
   updatePreview()
 })
 
-watch(() => [store.resumeData, store.language], () => {
+watch(() => [store.resumeData, locale.value], () => {
   updatePreview()
 }, { deep: true })
 </script>

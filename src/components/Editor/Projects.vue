@@ -1,22 +1,8 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
 import { Trash2, Plus, X } from 'lucide-vue-next'
-import { computed } from 'vue'
 
 const store = useResumeStore()
-
-const labels = computed(() => {
-  const isCn = store.language === 'cn'
-  return {
-    name: isCn ? '项目名称' : 'Project Name',
-    description: isCn ? '描述' : 'Description',
-    link: isCn ? '链接' : 'Link',
-    tech_stack: isCn ? '技术栈' : 'Tech Stack',
-    details: isCn ? '详情' : 'Details',
-    addDetail: isCn ? '添加详情' : 'Add Detail',
-    addProject: isCn ? '添加项目' : 'Add Project'
-  }
-})
 
 const addProject = () => {
   store.resumeData.projects.push({
@@ -58,7 +44,7 @@ const removeDetail = (pIndex: number, dIndex: number) => {
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="col-span-1 md:col-span-2 space-y-1">
-            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.name }}</label>
+            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.name') }}</label>
             <input 
               v-model="project.name" 
               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
@@ -68,7 +54,7 @@ const removeDetail = (pIndex: number, dIndex: number) => {
         </div>
 
         <div class="col-span-1 md:col-span-2 space-y-1">
-            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.description }}</label>
+            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.description') }}</label>
             <input 
               v-model="project.description" 
               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
@@ -78,7 +64,7 @@ const removeDetail = (pIndex: number, dIndex: number) => {
         </div>
         
         <div class="col-span-1 md:col-span-2 space-y-1">
-            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.link }}</label>
+            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.link') }}</label>
             <input 
               v-model="project.link" 
               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
@@ -88,7 +74,7 @@ const removeDetail = (pIndex: number, dIndex: number) => {
         </div>
 
         <div class="col-span-1 md:col-span-2 space-y-1">
-            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.tech_stack }}</label>
+            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.tech_stack') }}</label>
             <input 
               v-model="project.tech_stack" 
               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
@@ -99,7 +85,7 @@ const removeDetail = (pIndex: number, dIndex: number) => {
       </div>
 
       <div class="space-y-2">
-        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.details }}</label>
+        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.details') }}</label>
         <div v-for="(_detail, dIndex) in project.details" :key="dIndex" class="flex gap-2 items-start group/detail">
            <div class="flex-1 space-y-2">
              <input 
@@ -120,7 +106,7 @@ const removeDetail = (pIndex: number, dIndex: number) => {
           @click="addDetail(index)" 
           class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 mt-2 px-2 py-1 rounded hover:bg-blue-50 transition-colors w-fit"
         >
-          <Plus class="w-4 h-4" /> {{ labels.addDetail }}
+          <Plus class="w-4 h-4" /> {{ $t('editor.projects.addDetail') }}
         </button>
       </div>
     </div>
@@ -129,7 +115,7 @@ const removeDetail = (pIndex: number, dIndex: number) => {
       @click="addProject" 
       class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-medium"
     >
-      <Plus class="w-5 h-5" /> {{ labels.addProject }}
+      <Plus class="w-5 h-5" /> {{ $t('editor.projects.addProject') }}
     </button>
   </div>
 </template>

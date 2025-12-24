@@ -69,7 +69,6 @@ const defaultData: ResumeData = emptyData
 
 export const useResumeStore = defineStore('resume', () => {
   const resumeData = ref<ResumeData>(defaultData)
-  const language = ref<'cn' | 'en'>('cn')
 
   // Load from localStorage on init
   const savedData = localStorage.getItem('resumeData')
@@ -85,10 +84,6 @@ export const useResumeStore = defineStore('resume', () => {
   watch(resumeData, (newVal) => {
     localStorage.setItem('resumeData', JSON.stringify(newVal))
   }, { deep: true })
-
-  const toggleLanguage = () => {
-    language.value = language.value === 'cn' ? 'en' : 'cn'
-  }
 
   const updateResumeData = (newData: ResumeData) => {
     resumeData.value = newData
@@ -119,8 +114,6 @@ export const useResumeStore = defineStore('resume', () => {
 
   return {
     resumeData,
-    language,
-    toggleLanguage,
     updateResumeData,
     resetToEmpty,
     missingKeys,

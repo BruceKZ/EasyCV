@@ -5,8 +5,11 @@ import Editor from './components/Editor/index.vue'
 import { useResumeStore } from './stores/resume'
 import { compileResume } from './utils/typst'
 import { Languages, Trash2 } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+import { setLocale } from './i18n'
 
 const store = useResumeStore()
+const { t, locale } = useI18n()
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const exportJson = () => {
@@ -35,7 +38,7 @@ const importJson = (event: Event) => {
       const data = JSON.parse(content)
       store.updateResumeData(data)
     } catch (err) {
-      alert('Failed to parse JSON')
+      alert(t('app.importFailed'))
     }
   }
   reader.readAsText(file)
@@ -48,7 +51,7 @@ const exportPdf = async () => {
   
   try {
     isExporting.value = true
-    const templateName = store.language === 'cn' ? 'resume-cn.typ' : 'resume-en.typ'
+    const templateName = locale.value === 'zh-CN' ? 'resume-cn.typ' : 'resume-en.typ'
     const source = await compileResume(templateName, store.resumeData)
     
     // Import dynamically to avoid circular dependency issues if any, though direct import is fine too
@@ -67,18 +70,14 @@ const exportPdf = async () => {
     URL.revokeObjectURL(url)
   } catch (error) {
     console.error('Export failed:', error)
-    alert(store.language === 'cn' ? '导出 PDF 失败，请重试' : 'Failed to export PDF, please try again')
+    alert(t('app.exportFailed'))
   } finally {
     isExporting.value = false
   }
 }
 
 const clearData = () => {
-  const message = store.language === 'cn' 
-    ? '确定要清空所有数据吗？请确保您已保存当前数据到 JSON 文件。' 
-    : 'Are you sure you want to clear all data? Please make sure you have saved your current data to a JSON file.'
-  
-  if (confirm(message)) {
+  if (confirm(t('app.clearConfirm'))) {
     store.resetToEmpty()
   }
 }
@@ -90,8 +89,8 @@ const toggleLangMenu = () => {
   isLangMenuOpen.value = !isLangMenuOpen.value
 }
 
-const setLanguage = (lang: 'cn' | 'en') => {
-  store.language = lang
+const setLanguage = (lang: 'zh-CN' | 'en-US') => {
+  setLocale(lang)
   isLangMenuOpen.value = false
 }
 
@@ -118,7 +117,7 @@ onUnmounted(() => {
         <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm">
           CV
         </div>
-        <h1 class="text-xl font-bold tracking-tight text-gray-800">EasyCV</h1>
+        <h1 class="text-xl font-bold tracking-tight text-gray-800">{{ $t('app.title') }}</h1>
       </div>
       
       <div class="flex items-center gap-3">
@@ -126,10 +125,10 @@ onUnmounted(() => {
           <button 
             @click="clearData" 
             class="px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-white rounded-md transition-all flex items-center gap-1.5"
-            :title="store.language === 'cn' ? '清空数据' : 'Clear Data'"
+            :title="$t('app.clearData')"
           >
             <Trash2 class="w-4 h-4" />
-            {{ store.language === 'cn' ? '清空' : 'Clear' }}
+            {{ $t('app.clear') }}
           </button>
           <div class="w-px bg-gray-300 my-1"></div>
           <button 
@@ -137,7 +136,7 @@ onUnmounted(() => {
             class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white rounded-md transition-all"
             title="Download JSON backup"
           >
-            {{ store.language === 'cn' ? '导出 JSON' : 'Export JSON' }}
+            {{ $t('app.exportJSON') }}
           </button>
           <div class="w-px bg-gray-300 my-1"></div>
           <button 
@@ -145,7 +144,7 @@ onUnmounted(() => {
             class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white rounded-md transition-all"
             title="Import JSON backup"
           >
-            {{ store.language === 'cn' ? '导入 JSON' : 'Import JSON' }}
+            {{ $t('app.importJSON') }}
           </button>
         </div>
         
@@ -157,7 +156,7 @@ onUnmounted(() => {
           <button 
             @click="toggleLangMenu" 
             class="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-all flex items-center justify-center"
-            title="Switch Language"
+            :title="$t('app.switchLanguage')"
           >
             <Languages class="w-5 h-5" />
           </button>
@@ -167,16 +166,16 @@ onUnmounted(() => {
             class="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 py-1"
           >
             <button 
-              @click="setLanguage('cn')" 
+              @click="setLanguage('zh-CN')" 
               class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              :class="{ 'bg-gray-50 font-medium text-blue-600': store.language === 'cn' }"
+              :class="{ 'bg-gray-50 font-medium text-blue-600': locale === 'zh-CN' }"
             >
               中文
             </button>
             <button 
-              @click="setLanguage('en')" 
+              @click="setLanguage('en-US')" 
               class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              :class="{ 'bg-gray-50 font-medium text-blue-600': store.language === 'en' }"
+              :class="{ 'bg-gray-50 font-medium text-blue-600': locale === 'en-US' }"
             >
               English
             </button>
@@ -193,7 +192,7 @@ onUnmounted(() => {
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          {{ store.language === 'cn' ? (isExporting ? '导出中...' : '导出 PDF') : (isExporting ? 'Exporting...' : 'Export PDF') }}
+          {{ isExporting ? $t('app.exporting') : $t('app.exportPDF') }}
         </button>
       </div>
     </header>

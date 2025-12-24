@@ -1,18 +1,8 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
 import { Trash2, Plus } from 'lucide-vue-next'
-import { computed } from 'vue'
 
 const store = useResumeStore()
-
-const labels = computed(() => {
-  const isCn = store.language === 'cn'
-  return {
-    category: isCn ? '分类' : 'Category',
-    items: isCn ? '内容' : 'Items',
-    addSkill: isCn ? '添加技能分类' : 'Add Skill Category'
-  }
-})
 
 const addSkill = () => {
   store.resumeData.skills.push({
@@ -43,7 +33,7 @@ const removeSkill = (index: number) => {
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.category }}</label>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.skills.category') }}</label>
           <input 
             v-model="skill.key" 
             class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
@@ -53,7 +43,7 @@ const removeSkill = (index: number) => {
         </div>
         
         <div class="col-span-1 md:col-span-2 space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ labels.items }}</label>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.skills.items') }}</label>
           <textarea 
             v-model="skill.value" 
             class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
@@ -69,7 +59,7 @@ const removeSkill = (index: number) => {
       @click="addSkill" 
       class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-medium"
     >
-      <Plus class="w-5 h-5" /> {{ labels.addSkill }}
+      <Plus class="w-5 h-5" /> {{ $t('editor.skills.addSkill') }}
     </button>
   </div>
 </template>
