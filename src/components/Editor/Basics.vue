@@ -1,25 +1,13 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
-import { computed } from 'vue'
 
 const store = useResumeStore()
-
-const labels = computed(() => {
-  const isCn = store.language === 'cn'
-  return {
-    name: isCn ? '姓名' : 'Name',
-    email: isCn ? '邮箱' : 'Email',
-    phone: isCn ? '电话' : 'Phone',
-    website: isCn ? '个人网站' : 'Website',
-    github: isCn ? 'GitHub 用户名' : 'GitHub Username'
-  }
-})
 </script>
 
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ labels.name }}</label>
+      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.name') }}</label>
       <input 
         v-model="store.resumeData.basics.name" 
         type="text" 
@@ -29,7 +17,7 @@ const labels = computed(() => {
       />
     </div>
     <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ labels.email }}</label>
+      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.email') }}</label>
       <input 
         v-model="store.resumeData.basics.email" 
         type="email" 
@@ -39,7 +27,7 @@ const labels = computed(() => {
       />
     </div>
     <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ labels.phone }}</label>
+      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.phone') }}</label>
       <input 
         v-model="store.resumeData.basics.phone" 
         type="text" 
@@ -49,7 +37,7 @@ const labels = computed(() => {
       />
     </div>
     <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ labels.website }}</label>
+      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.website') }}</label>
       <input 
         v-model="store.resumeData.basics.website" 
         type="text" 
@@ -59,7 +47,7 @@ const labels = computed(() => {
       />
     </div>
     <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ labels.github }}</label>
+      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.github') }}</label>
       <input 
         v-model="store.resumeData.basics.github" 
         type="text" 
