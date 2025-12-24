@@ -112,12 +112,40 @@ export const useResumeStore = defineStore('resume', () => {
     missingKeys.value.clear()
   }
 
+  // Section order for draggable sections (excluding 'basics')
+  const defaultSectionOrder = ['education', 'work', 'projects', 'skills', 'awards', 'misc']
+  const sectionOrder = ref<string[]>(defaultSectionOrder)
+
+  // Load section order from localStorage on init
+  const savedSectionOrder = localStorage.getItem('sectionOrder')
+  if (savedSectionOrder) {
+    try {
+      const parsed = JSON.parse(savedSectionOrder)
+      if (Array.isArray(parsed) && parsed.length === 6) {
+        sectionOrder.value = parsed
+      }
+    } catch (e) {
+      console.error('Failed to load section order from localStorage', e)
+    }
+  }
+
+  // Watch section order changes and save to localStorage
+  watch(sectionOrder, (newVal) => {
+    localStorage.setItem('sectionOrder', JSON.stringify(newVal))
+  }, { deep: true })
+
+  const updateSectionOrder = (newOrder: string[]) => {
+    sectionOrder.value = newOrder
+  }
+
   return {
     resumeData,
     updateResumeData,
     resetToEmpty,
     missingKeys,
     addMissingKey,
-    clearMissingKeys
+    clearMissingKeys,
+    sectionOrder,
+    updateSectionOrder
   }
 })

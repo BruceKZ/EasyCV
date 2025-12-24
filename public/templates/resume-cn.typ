@@ -1,6 +1,7 @@
 #import "cv_template.typ": cv
 
 #let private_info = json("resume-private/private_info.json")
+#let section_order = json("resume-private/section_order.json")
 
 #let labels = (
     education: "教育经历",
@@ -13,4 +14,4 @@
     misc: "其他"
 )
 
-#cv(private_info, labels)
+#cv(private_info, labels, section_order: section_order)

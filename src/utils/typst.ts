@@ -1,6 +1,6 @@
 import type { ResumeData } from '../stores/resume'
 
-export async function compileResume(templateName: string, data: ResumeData): Promise<string> {
+export async function compileResume(templateName: string, data: ResumeData, sectionOrder: string[]): Promise<string> {
   // 1. Fetch all necessary files
   const [templateRes, cvTemplateRes, chicvRes, fontawesomeRes] = await Promise.all([
     fetch(`/templates/${templateName}`),
@@ -38,6 +38,18 @@ export async function compileResume(templateName: string, data: ResumeData): Pro
     template = template.replace(jsonImportRegex, `#let private_info = json(bytes("${escapedJsonString}"))`)
   } else {
     console.warn('Could not find json import in template')
+  }
+
+  // 6. Inject section order
+  const sectionOrderString = JSON.stringify(sectionOrder)
+  const escapedSectionOrderString = sectionOrderString.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+  
+  const sectionOrderImportRegex = /#let\s+section_order\s*=\s*json\s*\(".*?"\)/
+  
+  if (sectionOrderImportRegex.test(template)) {
+    template = template.replace(sectionOrderImportRegex, `#let section_order = json(bytes("${escapedSectionOrderString}"))`)
+  } else {
+    console.warn('Could not find section_order import in template')
   }
 
   return template
