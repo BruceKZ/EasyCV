@@ -9,37 +9,48 @@ import Awards from './Awards.vue'
 import { ref, watch } from 'vue'
 import { ChevronDown, ChevronRight, User, GraduationCap, Briefcase, FolderGit2, Code2, Trophy, MoreHorizontal } from 'lucide-vue-next'
 
-const STORAGE_KEY_ACTIVE_SECTION = 'easycv-editor-active-section'
+const STORAGE_KEY_ACTIVE_SECTIONS = 'easycv-editor-active-sections'
 
 // Restore state from localStorage
-const getSavedActiveSection = (): string | null => {
+const getSavedActiveSections = (): Set<string> => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY_ACTIVE_SECTION)
-    return saved ? saved : 'basics'
+    const saved = localStorage.getItem(STORAGE_KEY_ACTIVE_SECTIONS)
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      return new Set(Array.isArray(parsed) ? parsed : ['basics'])
+    }
+    return new Set(['basics'])
   } catch (e) {
-    console.error('Failed to load active section from localStorage:', e)
-    return 'basics'
+    console.error('Failed to load active sections from localStorage:', e)
+    return new Set(['basics'])
   }
 }
 
-const activeSection = ref<string | null>(getSavedActiveSection())
+const activeSections = ref<Set<string>>(getSavedActiveSections())
 
 const toggleSection = (section: string) => {
-  activeSection.value = activeSection.value === section ? null : section
+  if (activeSections.value.has(section)) {
+    activeSections.value.delete(section)
+  } else {
+    activeSections.value.add(section)
+  }
+  // Trigger reactivity by creating a new Set
+  activeSections.value = new Set(activeSections.value)
 }
 
-// Watch activeSection changes and save to localStorage
-watch(activeSection, (newValue) => {
+const isSectionActive = (section: string) => {
+  return activeSections.value.has(section)
+}
+
+// Watch activeSections changes and save to localStorage
+watch(activeSections, (newValue) => {
   try {
-    if (newValue === null) {
-      localStorage.removeItem(STORAGE_KEY_ACTIVE_SECTION)
-    } else {
-      localStorage.setItem(STORAGE_KEY_ACTIVE_SECTION, newValue)
-    }
+    const sectionsArray = Array.from(newValue)
+    localStorage.setItem(STORAGE_KEY_ACTIVE_SECTIONS, JSON.stringify(sectionsArray))
   } catch (e) {
-    console.error('Failed to save active section to localStorage:', e)
+    console.error('Failed to save active sections to localStorage:', e)
   }
-})
+}, { deep: true })
 
 const sections = [
   { id: 'basics', labelKey: 'editor.sections.basics', icon: User, component: Basics },
@@ -58,26 +69,26 @@ const sections = [
       v-for="section in sections" 
       :key="section.id" 
       class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-all duration-200"
-      :class="{ 'ring-2 ring-blue-100 border-blue-200': activeSection === section.id }"
+      :class="{ 'ring-2 ring-blue-100 border-blue-200': isSectionActive(section.id) }"
     >
       <button 
         @click="toggleSection(section.id)" 
         class="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
       >
         <div class="flex items-center gap-3">
-          <component :is="section.icon" class="w-5 h-5 text-gray-500" :class="{ 'text-blue-600': activeSection === section.id }" />
-          <span class="font-semibold text-gray-700" :class="{ 'text-gray-900': activeSection === section.id }">
+          <component :is="section.icon" class="w-5 h-5 text-gray-500" :class="{ 'text-blue-600': isSectionActive(section.id) }" />
+          <span class="font-semibold text-gray-700" :class="{ 'text-gray-900': isSectionActive(section.id) }">
             {{ $t(section.labelKey) }}
           </span>
         </div>
         <component 
-          :is="activeSection === section.id ? ChevronDown : ChevronRight" 
+          :is="isSectionActive(section.id) ? ChevronDown : ChevronRight" 
           class="w-4 h-4 text-gray-400"
         />
       </button>
       
       <div 
-        v-show="activeSection === section.id" 
+        v-show="isSectionActive(section.id)" 
         class="border-t border-gray-100 bg-gray-50/50"
       >
         <div class="p-5">
