@@ -17,12 +17,15 @@ const removeMisc = (index: number) => {
   <div class="space-y-4">
     <div v-for="(_item, index) in store.resumeData.misc" :key="index" class="flex gap-3 items-start group">
       <div class="flex-1 space-y-2">
-        <input 
+        <textarea 
           v-model="store.resumeData.misc[index]" 
-          class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
+          class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors resize-y" 
           :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('misc') }"
+          rows="2"
+          wrap="soft"
+          style="white-space: pre-wrap; overflow-wrap: break-word; word-wrap: break-word;"
           :placeholder="$t('editor.misc.item')" 
-        />
+        ></textarea>
       </div>
       <button 
         @click="removeMisc(index)" 

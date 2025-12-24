@@ -91,7 +91,7 @@ const exportPdf = async () => {
   try {
     isExporting.value = true
     const templateName = locale.value === 'zh-CN' ? 'resume-cn.typ' : 'resume-en.typ'
-    const source = await compileResume(templateName, store.resumeData)
+    const source = await compileResume(templateName, store.resumeData, store.sectionOrder)
     
     // Import dynamically to avoid circular dependency issues if any, though direct import is fine too
     const { exportPdf } = await import('./utils/typst')
