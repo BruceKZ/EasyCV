@@ -39,7 +39,7 @@ const updatePreview = async () => {
   try {
     // Determine template based on language
     const templateName = locale.value === 'zh-CN' ? 'resume-cn.typ' : 'resume-en.typ'
-    const source = await compileResume(templateName, store.resumeData)
+    const source = await compileResume(templateName, store.resumeData, store.sectionOrder)
     templateContent.value = source
     
     // Compile to SVG
@@ -76,7 +76,7 @@ onMounted(async () => {
   updatePreview()
 })
 
-watch(() => [store.resumeData, locale.value], () => {
+watch(() => [store.resumeData, store.sectionOrder, locale.value], () => {
   updatePreview()
 }, { deep: true })
 </script>
