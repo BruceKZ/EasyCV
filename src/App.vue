@@ -11,6 +11,45 @@ import { setLocale } from './i18n'
 const store = useResumeStore()
 const { t, locale } = useI18n()
 const fileInput = ref<HTMLInputElement | null>(null)
+const editorPanelRef = ref<HTMLElement | null>(null)
+
+const STORAGE_KEY_SCROLL_POSITION = 'easycv-editor-scroll-position'
+
+// Save scroll position
+const saveScrollPosition = () => {
+  if (editorPanelRef.value) {
+    try {
+      localStorage.setItem(STORAGE_KEY_SCROLL_POSITION, editorPanelRef.value.scrollTop.toString())
+    } catch (e) {
+      console.error('Failed to save scroll position:', e)
+    }
+  }
+}
+
+// Restore scroll position
+const restoreScrollPosition = () => {
+  if (editorPanelRef.value) {
+    try {
+      const savedPosition = localStorage.getItem(STORAGE_KEY_SCROLL_POSITION)
+      if (savedPosition !== null) {
+        editorPanelRef.value.scrollTop = parseInt(savedPosition, 10)
+      }
+    } catch (e) {
+      console.error('Failed to restore scroll position:', e)
+    }
+  }
+}
+
+// Throttle function to avoid frequent saves
+let scrollTimeout: number | null = null
+const handleScroll = () => {
+  if (scrollTimeout !== null) {
+    clearTimeout(scrollTimeout)
+  }
+  scrollTimeout = window.setTimeout(() => {
+    saveScrollPosition()
+  }, 150)
+}
 
 const exportJson = () => {
   const dataStr = JSON.stringify(store.resumeData, null, 2)
@@ -102,10 +141,28 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  
+  // Restore scroll position
+  restoreScrollPosition()
+  
+  // Add scroll listener
+  if (editorPanelRef.value) {
+    editorPanelRef.value.addEventListener('scroll', handleScroll)
+  }
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  
+  // Remove scroll listener
+  if (editorPanelRef.value) {
+    editorPanelRef.value.removeEventListener('scroll', handleScroll)
+  }
+  
+  // Clean up timeout
+  if (scrollTimeout !== null) {
+    clearTimeout(scrollTimeout)
+  }
 })
 </script>
 
@@ -199,7 +256,7 @@ onUnmounted(() => {
 
     <div class="flex flex-1 overflow-hidden">
       <!-- Left Panel: Editor -->
-      <div class="w-1/2 h-full border-r border-gray-200 bg-gray-50 overflow-y-auto custom-scrollbar">
+      <div ref="editorPanelRef" class="w-1/2 h-full border-r border-gray-200 bg-gray-50 overflow-y-auto custom-scrollbar">
         <div class="max-w-3xl mx-auto p-6">
           <Editor />
         </div>
