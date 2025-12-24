@@ -46,9 +46,11 @@ const removeSkill = (index: number) => {
           <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.skills.items') }}</label>
           <textarea 
             v-model="skill.value" 
-            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
+            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors resize-y" 
             :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('value') }"
             rows="2"
+            wrap="soft"
+            style="white-space: pre-wrap; overflow-wrap: break-word; word-wrap: break-word;"
             placeholder="C++, Rust, Python..."
           ></textarea>
         </div>
