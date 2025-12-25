@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
-import { Trash2, Plus, X } from 'lucide-vue-next'
+import { DeleteOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons-vue'
 
 const store = useResumeStore()
 
@@ -28,100 +28,69 @@ const removeDetail = (pIndex: number, dIndex: number) => {
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div 
+  <div class="space-y-4">
+    <a-card 
       v-for="(project, index) in store.resumeData.projects" 
       :key="index" 
-      class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm relative group hover:border-blue-300 transition-colors"
+      class="shadow-sm hover:shadow-md transition-shadow"
+      :bodyStyle="{ padding: '16px' }"
     >
-      <button 
-        @click="removeProject(index)" 
-        class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50"
-        title="Remove Project"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="col-span-1 md:col-span-2 space-y-1">
-            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.name') }}</label>
-            <input 
-              v-model="project.name" 
-              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
-              :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('name') }"
-              placeholder="Project Name"
-            />
-        </div>
+      <template #extra>
+        <a-button type="text" danger @click="removeProject(index)">
+          <template #icon><DeleteOutlined /></template>
+        </a-button>
+      </template>
 
-        <div class="col-span-1 md:col-span-2 space-y-1">
-            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.description') }}</label>
-            <textarea 
-              v-model="project.description" 
-              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors resize-y" 
-              :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('description') }"
-              rows="2"
-              wrap="soft"
-              style="white-space: pre-wrap; overflow-wrap: break-word; word-wrap: break-word;"
-              placeholder="Description" 
-            ></textarea>
-        </div>
-        
-        <div class="col-span-1 md:col-span-2 space-y-1">
-            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.link') }}</label>
-            <input 
-              v-model="project.link" 
-              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
-              :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('link') }"
-              placeholder="Link"
-            />
-        </div>
+      <a-form layout="vertical">
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <a-form-item :label="$t('editor.projects.name')" :validate-status="store.missingKeys.has('name') ? 'error' : ''">
+              <a-input v-model:value="project.name" placeholder="Project Name" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item :label="$t('editor.projects.description')" :validate-status="store.missingKeys.has('description') ? 'error' : ''">
+              <a-textarea 
+                v-model:value="project.description" 
+                :auto-size="{ minRows: 2, maxRows: 6 }"
+                placeholder="Description" 
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item :label="$t('editor.projects.link')" :validate-status="store.missingKeys.has('link') ? 'error' : ''">
+              <a-input v-model:value="project.link" placeholder="Link" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item :label="$t('editor.projects.tech_stack')" :validate-status="store.missingKeys.has('tech_stack') ? 'error' : ''">
+              <a-input v-model:value="project.tech_stack" placeholder="Tech Stack" />
+            </a-form-item>
+          </a-col>
+        </a-row>
 
-        <div class="col-span-1 md:col-span-2 space-y-1">
-            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.tech_stack') }}</label>
-            <input 
-              v-model="project.tech_stack" 
-              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
-              :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('tech_stack') }"
-              placeholder="Tech Stack"
+        <a-form-item :label="$t('editor.projects.details')">
+          <div v-for="(_detail, dIndex) in project.details" :key="dIndex" class="flex gap-2 items-start mb-2">
+            <a-textarea 
+              v-model:value="project.details[dIndex]" 
+              :auto-size="{ minRows: 2, maxRows: 6 }"
+              placeholder="Detail" 
             />
-        </div>
-      </div>
-
-      <div class="space-y-2">
-        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.projects.details') }}</label>
-        <div v-for="(_detail, dIndex) in project.details" :key="dIndex" class="flex gap-2 items-start group/detail">
-           <div class="flex-1 space-y-2">
-             <textarea 
-               v-model="project.details[dIndex]" 
-               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors resize-y" 
-               rows="2"
-               wrap="soft"
-               style="white-space: pre-wrap; overflow-wrap: break-word; word-wrap: break-word;"
-               placeholder="Detail" 
-             ></textarea>
-           </div>
-           <button 
-             @click="removeDetail(index, dIndex)" 
-             class="text-gray-400 hover:text-red-500 p-1 rounded hover:bg-red-50 mt-2 opacity-0 group-hover/detail:opacity-100 transition-all"
-             title="Remove Detail"
-           >
-             <X class="w-4 h-4" />
-           </button>
-        </div>
-        <button 
-          @click="addDetail(index)" 
-          class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 mt-2 px-2 py-1 rounded hover:bg-blue-50 transition-colors w-fit"
-        >
-          <Plus class="w-4 h-4" /> {{ $t('editor.projects.addDetail') }}
-        </button>
-      </div>
-    </div>
+            <a-button type="text" danger size="small" @click="removeDetail(index, dIndex)">
+              <template #icon><CloseOutlined /></template>
+            </a-button>
+          </div>
+          <a-button type="dashed" size="small" block @click="addDetail(index)">
+            <template #icon><PlusOutlined /></template>
+            {{ $t('editor.projects.addDetail') }}
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </a-card>
     
-    <button 
-      @click="addProject" 
-      class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-medium"
-    >
-      <Plus class="w-5 h-5" /> {{ $t('editor.projects.addProject') }}
-    </button>
+    <a-button type="dashed" block @click="addProject" class="py-4 h-auto">
+      <template #icon><PlusOutlined /></template>
+      {{ $t('editor.projects.addProject') }}
+    </a-button>
   </div>
 </template>

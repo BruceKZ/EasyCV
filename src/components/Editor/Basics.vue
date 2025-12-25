@@ -5,56 +5,33 @@ const store = useResumeStore()
 </script>
 
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.name') }}</label>
-      <input 
-        v-model="store.resumeData.basics.name" 
-        type="text" 
-        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors"
-        :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('name') }"
-        placeholder="Your Name"
-      />
-    </div>
-    <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.email') }}</label>
-      <input 
-        v-model="store.resumeData.basics.email" 
-        type="email" 
-        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors"
-        :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('email') }"
-        placeholder="example@email.com"
-      />
-    </div>
-    <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.phone') }}</label>
-      <input 
-        v-model="store.resumeData.basics.phone" 
-        type="text" 
-        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors"
-        :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('phone') }"
-        placeholder="+86 123 4567 8901"
-      />
-    </div>
-    <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.website') }}</label>
-      <input 
-        v-model="store.resumeData.basics.website" 
-        type="text" 
-        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors"
-        :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('website') }"
-        placeholder="example.com"
-      />
-    </div>
-    <div class="space-y-1">
-      <label class="block text-sm font-medium text-gray-700">{{ $t('editor.basics.github') }}</label>
-      <input 
-        v-model="store.resumeData.basics.github" 
-        type="text" 
-        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors"
-        :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('github') }"
-        placeholder="username"
-      />
-    </div>
-  </div>
+  <a-form layout="vertical">
+    <a-row :gutter="16">
+      <a-col :span="24" :md="12">
+        <a-form-item :label="$t('editor.basics.name')" :validate-status="store.missingKeys.has('name') ? 'error' : ''">
+          <a-input v-model:value="store.resumeData.basics.name" placeholder="Your Name" />
+        </a-form-item>
+      </a-col>
+      <a-col :span="24" :md="12">
+        <a-form-item :label="$t('editor.basics.email')" :validate-status="store.missingKeys.has('email') ? 'error' : ''">
+          <a-input v-model:value="store.resumeData.basics.email" placeholder="example@email.com" />
+        </a-form-item>
+      </a-col>
+      <a-col :span="24" :md="12">
+        <a-form-item :label="$t('editor.basics.phone')" :validate-status="store.missingKeys.has('phone') ? 'error' : ''">
+          <a-input v-model:value="store.resumeData.basics.phone" placeholder="+86 123 4567 8901" />
+        </a-form-item>
+      </a-col>
+      <a-col :span="24" :md="12">
+        <a-form-item :label="$t('editor.basics.website')" :validate-status="store.missingKeys.has('website') ? 'error' : ''">
+          <a-input v-model:value="store.resumeData.basics.website" placeholder="example.com" />
+        </a-form-item>
+      </a-col>
+      <a-col :span="24" :md="12">
+        <a-form-item :label="$t('editor.basics.github')" :validate-status="store.missingKeys.has('github') ? 'error' : ''">
+          <a-input v-model:value="store.resumeData.basics.github" placeholder="username" />
+        </a-form-item>
+      </a-col>
+    </a-row>
+  </a-form>
 </template>

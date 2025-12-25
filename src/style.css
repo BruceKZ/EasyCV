@@ -1,1 +1,17 @@
 @import "tailwindcss";
+@import "tailwindcss";
+
+/* Fix for Ant Design Vue icons disappearing due to Tailwind Preflight */
+.anticon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.anticon svg {
+  display: inline-block !important;
+  width: 1em !important;
+  height: 1em !important;
+  fill: currentColor !important;
+  vertical-align: -0.125em !important;
+}

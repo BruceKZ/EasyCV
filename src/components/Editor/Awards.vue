@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
-import { Trash2, Plus } from 'lucide-vue-next'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 
 const store = useResumeStore()
 
@@ -16,31 +16,22 @@ const removeAward = (index: number) => {
 <template>
   <div class="space-y-4">
     <div v-for="(_item, index) in store.resumeData.awards" :key="index" class="flex gap-3 items-start group">
-      <div class="flex-1 space-y-2">
-        <textarea 
-          v-model="store.resumeData.awards[index]" 
-          class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors resize-y" 
-          :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('awards') }"
-          rows="2"
-          wrap="soft"
-          style="white-space: pre-wrap; overflow-wrap: break-word; word-wrap: break-word;"
+      <div class="flex-1">
+        <a-textarea 
+          v-model:value="store.resumeData.awards[index]" 
+          :auto-size="{ minRows: 2, maxRows: 6 }"
+          :status="store.missingKeys.has('awards') ? 'error' : ''"
           :placeholder="$t('editor.awards.award')" 
-        ></textarea>
+        />
       </div>
-      <button 
-        @click="removeAward(index)" 
-        class="text-gray-400 hover:text-red-500 p-2 rounded hover:bg-red-50 mt-1 transition-colors"
-        title="Remove Award"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <a-button type="text" danger @click="removeAward(index)">
+        <template #icon><DeleteOutlined /></template>
+      </a-button>
     </div>
     
-    <button 
-      @click="addAward" 
-      class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-medium"
-    >
-      <Plus class="w-5 h-5" /> {{ $t('editor.awards.addAward') }}
-    </button>
+    <a-button type="dashed" block @click="addAward" class="py-4 h-auto">
+      <template #icon><PlusOutlined /></template>
+      {{ $t('editor.awards.addAward') }}
+    </a-button>
   </div>
 </template>
