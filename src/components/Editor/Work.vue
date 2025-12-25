@@ -34,7 +34,7 @@ const parseDate = (dateStr: string) => {
   if (parts.length !== 2) return { start: '', end: '', isPresent: false }
   
   const start = parts[0]!.replace('.', '-')
-  const isPresent = parts[1]!.toLowerCase() === 'present' || parts[1] === '至今'
+  const isPresent = parts[1]!.toLowerCase() === 'present' || parts[1] === 'Present'
   const end = isPresent ? '' : parts[1]!.replace('.', '-')
   
   return { start, end, isPresent }
