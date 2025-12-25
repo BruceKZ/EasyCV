@@ -13,6 +13,7 @@
     "@myriaddreamin/typst.ts": "^0.6.1-rc5",
     "@myriaddreamin/typst.vue3": "^0.6.1-rc5",
     "@tailwindcss/postcss": "^4.1.18",
+    "ant-design-vue": "^4.2.6",
     "lucide-vue-next": "^0.562.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.24",
