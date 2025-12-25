@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import { VueDraggable } from 'vue-draggable-plus' // 引入库
+import { VueDraggable } from 'vue-draggable-plus' // Import library
 import Basics from './Basics.vue'
 import Education from './Education.vue'
 import Work from './Work.vue'
@@ -17,7 +17,6 @@ import { useResumeStore } from '../../stores/resume'
 
 const store = useResumeStore()
 
-// --- 保持原本的 LocalStorage 逻辑不变 ---
 const STORAGE_KEY_ACTIVE_SECTIONS = 'easycv-editor-active-sections'
 const getSavedActiveSections = (): Set<string> => {
   try {
@@ -46,7 +45,7 @@ watch(activeSections, (newValue) => {
   localStorage.setItem(STORAGE_KEY_ACTIVE_SECTIONS, JSON.stringify(Array.from(newValue)))
 }, { deep: true })
 
-// --- 定义 Section 数据结构 ---
+// --- Define Section data structure ---
 const sectionDefinitions = {
   basics: { id: 'basics', labelKey: 'editor.sections.basics', icon: UserOutlined, component: Basics },
   education: { id: 'education', labelKey: 'editor.sections.education', icon: ReadOutlined, component: Education },
@@ -59,8 +58,8 @@ const sectionDefinitions = {
 
 const fixedSection = sectionDefinitions.basics
 
-// --- 核心：拖动列表的计算属性 ---
-// 这是一个代理，Get时将 ID 转换为对象，Set时将对象转回 ID 存入 Store
+// --- Core: Computed property for draggable list ---
+// This is a proxy: converts ID to object on Get, and converts object back to ID on Set to save in Store
 const draggableList = computed({
   get: () => {
     return store.sectionOrder
@@ -68,7 +67,7 @@ const draggableList = computed({
       .filter((section): section is NonNullable<typeof section> => section !== undefined)
   },
   set: (val) => {
-    // 拖动完成后，将对象数组转回 ID 数组更新 Store
+    // After dragging, convert object array back to ID array to update Store
     store.updateSectionOrder(val.map(item => item.id))
   }
 })
@@ -142,38 +141,38 @@ const draggableList = computed({
 </template>
 
 <style scoped>
-/* Ghost Item: 占位符样式
-  这是原本列表中的位置，用户希望看到"重点色边框"和"规则布局"
+/* Ghost Item: Placeholder style
+  This is the position in the original list; users expect to see "accent color border" and "regular layout"
 */
 .ghost-item {
-  opacity: 1; /* 保持可见，或者设为 0.5 半透明 */
-  background-color: #f0f9ff !important; /* 浅蓝色背景 */
-  border: 2px dashed #3b82f6 !important; /* 重点色虚线框 */
+  opacity: 1; /* Keep visible, or set to 0.5 for semi-transparent */
+  background-color: #f0f9ff !important; /* Light blue background */
+  border: 2px dashed #3b82f6 !important; /* Accent color dashed border */
   box-shadow: none !important;
   
-  /* 如果你想让占位符里的内容不可见，只保留框，可以加上这个： */
+  /* If you want to make the content in the placeholder invisible and only keep the frame, you can add this: */
   /* color: transparent !important; */
 }
 
-/* 让占位符内部元素变淡，突出框 */
+/* Fade internal elements of the placeholder to highlight the frame */
 .ghost-item * {
   opacity: 0.3; 
 }
 
-/* Dragging Item: 正在被拖拽的元素样式
-  这是跟随鼠标/手指移动的元素
+/* Dragging Item: Style for the element being dragged
+  This is the element that follows the mouse/finger movement
 */
 .dragging-item {
   opacity: 1 !important;
   background-color: white;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-  transform: scale(1.02); /* 稍微放大一点，增加立体感 */
+  transform: scale(1.02); /* Scale up slightly to add a sense of depth */
   cursor: grabbing;
-  border: 1px solid #3b82f6; /* 拖拽时给个实线边框 */
-  z-index: 9999; /* 确保在最上层 */
+  border: 1px solid #3b82f6; /* Give a solid border when dragging */
+  z-index: 9999; /* Ensure it's on the top layer */
 }
 
-/* 处理移动端触摸行为，防止页面随拖动滚动 */
+/* Handle mobile touch behavior to prevent page scrolling during drag */
 .drag-handle {
   touch-action: none; 
 }
