@@ -1,17 +1,33 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import Preview from './components/Preview.vue'
 import Editor from './components/Editor/index.vue'
 import { useResumeStore } from './stores/resume'
 import { compileResume } from './utils/typst'
-import { Languages, Trash2 } from 'lucide-vue-next'
+import { 
+  TranslationOutlined, 
+  DeleteOutlined, 
+  ExportOutlined, 
+  ImportOutlined, 
+  DownloadOutlined,
+  EditOutlined,
+  EyeOutlined
+} from '@ant-design/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { setLocale } from './i18n'
+import { Grid } from 'ant-design-vue'
+
+const useBreakpoint = Grid.useBreakpoint
+const screens = useBreakpoint()
 
 const store = useResumeStore()
 const { t, locale } = useI18n()
 const fileInput = ref<HTMLInputElement | null>(null)
 const editorPanelRef = ref<HTMLElement | null>(null)
+
+// Mobile state
+const activeTab = ref<'editor' | 'preview'>('editor')
+const isMobile = computed(() => !screens.value.md)
 
 const STORAGE_KEY_SCROLL_POSITION = 'easycv-editor-scroll-position'
 
@@ -93,11 +109,9 @@ const exportPdf = async () => {
     const templateName = locale.value === 'zh-CN' ? 'resume-cn.typ' : 'resume-en.typ'
     const source = await compileResume(templateName, store.resumeData, store.sectionOrder)
     
-    // Import dynamically to avoid circular dependency issues if any, though direct import is fine too
     const { exportPdf } = await import('./utils/typst')
     const pdfData = await exportPdf(source)
     
-    // Create blob and download
     const blob = new Blob([pdfData as any], { type: 'application/pdf' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -121,45 +135,23 @@ const clearData = () => {
   }
 }
 
-const isLangMenuOpen = ref(false)
-const langMenuRef = ref<HTMLElement | null>(null)
-
-const toggleLangMenu = () => {
-  isLangMenuOpen.value = !isLangMenuOpen.value
-}
-
-const setLanguage = (lang: 'zh-CN' | 'en-US') => {
-  setLocale(lang)
-  isLangMenuOpen.value = false
-}
-
-const handleClickOutside = (event: MouseEvent) => {
-  if (langMenuRef.value && !langMenuRef.value.contains(event.target as Node)) {
-    isLangMenuOpen.value = false
+const handleMenuClick = (e: any) => {
+  if (e.key === 'zh-CN' || e.key === 'en-US') {
+    setLocale(e.key)
   }
 }
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-  
-  // Restore scroll position
   restoreScrollPosition()
-  
-  // Add scroll listener
   if (editorPanelRef.value) {
     editorPanelRef.value.addEventListener('scroll', handleScroll)
   }
 })
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-  
-  // Remove scroll listener
   if (editorPanelRef.value) {
     editorPanelRef.value.removeEventListener('scroll', handleScroll)
   }
-  
-  // Clean up timeout
   if (scrollTimeout !== null) {
     clearTimeout(scrollTimeout)
   }
@@ -167,107 +159,102 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen w-screen overflow-hidden bg-gray-50 text-gray-900 font-sans">
-    <!-- Toolbar -->
-    <header class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm z-20">
+  <a-layout class="h-screen overflow-hidden">
+    <!-- Header -->
+    <a-layout-header :style="{ background: '#fff', padding: '0 16px' }" class="border-b border-gray-200 flex justify-between items-center z-20 h-14 leading-none">
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm">
           CV
         </div>
-        <h1 class="text-xl font-bold tracking-tight text-gray-800">{{ $t('app.title') }}</h1>
+        <h1 class="text-xl font-bold tracking-tight text-gray-800 m-0 leading-none h-8 flex items-center">{{ $t('app.title') }}</h1>
       </div>
       
-      <div class="flex items-center gap-3">
-        <div class="flex bg-gray-100 rounded-lg p-1 border border-gray-200">
-          <button 
-            @click="clearData" 
-            class="px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-white rounded-md transition-all flex items-center gap-1.5"
-            :title="$t('app.clearData')"
-          >
-            <Trash2 class="w-4 h-4" />
-            {{ $t('app.clear') }}
-          </button>
-          <div class="w-px bg-gray-300 my-1"></div>
-          <button 
-            @click="exportJson" 
-            class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white rounded-md transition-all"
-            title="Download JSON backup"
-          >
-            {{ $t('app.exportJSON') }}
-          </button>
-          <div class="w-px bg-gray-300 my-1"></div>
-          <button 
-            @click="triggerImport" 
-            class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white rounded-md transition-all"
-            title="Import JSON backup"
-          >
-            {{ $t('app.importJSON') }}
-          </button>
-        </div>
+      <div class="flex items-center gap-2">
+        <a-space>
+          <a-button-group>
+            <a-tooltip :title="$t('app.clearData')">
+              <a-button danger @click="clearData">
+                <template #icon><DeleteOutlined /></template>
+              </a-button>
+            </a-tooltip>
+            <a-tooltip :title="$t('app.exportJSON')">
+              <a-button @click="exportJson">
+                <template #icon><ExportOutlined /></template>
+              </a-button>
+            </a-tooltip>
+            <a-tooltip :title="$t('app.importJSON')">
+              <a-button @click="triggerImport">
+                <template #icon><ImportOutlined /></template>
+              </a-button>
+            </a-tooltip>
+          </a-button-group>
+
+          <a-dropdown>
+            <template #overlay>
+              <a-menu @click="handleMenuClick">
+                <a-menu-item key="zh-CN">中文</a-menu-item>
+                <a-menu-item key="en-US">English</a-menu-item>
+              </a-menu>
+            </template>
+            <a-button>
+              <template #icon><TranslationOutlined /></template>
+            </a-button>
+          </a-dropdown>
+
+          <a-button type="primary" @click="exportPdf" :loading="isExporting">
+            <template #icon><DownloadOutlined /></template>
+            <span v-if="!isMobile">{{ isExporting ? $t('app.exporting') : $t('app.exportPDF') }}</span>
+          </a-button>
+        </a-space>
         
         <input ref="fileInput" type="file" class="hidden" accept=".json" @change="importJson" />
-        
-        <div class="h-6 w-px bg-gray-300 mx-1"></div>
+      </div>
+    </a-layout-header>
 
-        <div class="relative" ref="langMenuRef">
-          <button 
-            @click="toggleLangMenu" 
-            class="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-all flex items-center justify-center"
-            :title="$t('app.switchLanguage')"
-          >
-            <Languages class="w-5 h-5" />
-          </button>
-
-          <div 
-            v-if="isLangMenuOpen" 
-            class="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 py-1"
-          >
-            <button 
-              @click="setLanguage('zh-CN')" 
-              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              :class="{ 'bg-gray-50 font-medium text-blue-600': locale === 'zh-CN' }"
-            >
-              中文
-            </button>
-            <button 
-              @click="setLanguage('en-US')" 
-              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              :class="{ 'bg-gray-50 font-medium text-blue-600': locale === 'en-US' }"
-            >
-              English
-            </button>
+    <a-layout-content class="relative overflow-hidden">
+      <!-- Desktop Layout -->
+      <div v-show="!isMobile" class="flex h-full">
+        <div ref="editorPanelRef" class="w-1/2 h-full border-r border-gray-200 bg-gray-50 overflow-y-auto custom-scrollbar">
+          <div class="max-w-3xl mx-auto p-6">
+            <Editor />
           </div>
         </div>
-
-        <button 
-          @click="exportPdf" 
-          :disabled="isExporting"
-          class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <svg v-if="!isExporting" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-          <svg v-else class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          {{ isExporting ? $t('app.exporting') : $t('app.exportPDF') }}
-        </button>
-      </div>
-    </header>
-
-    <div class="flex flex-1 overflow-hidden">
-      <!-- Left Panel: Editor -->
-      <div ref="editorPanelRef" class="w-1/2 h-full border-r border-gray-200 bg-gray-50 overflow-y-auto custom-scrollbar">
-        <div class="max-w-3xl mx-auto p-6">
-          <Editor />
+        <div class="w-1/2 h-full bg-gray-100 p-8 overflow-y-auto custom-scrollbar">
+          <Preview />
         </div>
       </div>
 
-      <!-- Right Panel: Preview -->
-      <div class="w-1/2 h-full bg-gray-100 p-8 flex justify-center items-start overflow-y-auto custom-scrollbar">
-        <Preview />
+      <!-- Mobile Layout -->
+      <div v-show="isMobile" class="h-full overflow-y-auto custom-scrollbar bg-gray-50 pb-16">
+        <div v-show="activeTab === 'editor'" class="p-4">
+          <Editor />
+        </div>
+        <div v-show="activeTab === 'preview'" class="p-4 bg-gray-100 min-h-full">
+          <Preview />
+        </div>
+      </div>
+    </a-layout-content>
+
+    <!-- Mobile Bottom Nav -->
+    <div v-if="isMobile" class="fixed bottom-0 w-full bg-white border-t border-gray-200 z-50 flex justify-around items-center h-14 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+      <div 
+        class="flex flex-col items-center justify-center w-full h-full cursor-pointer transition-colors"
+        :class="activeTab === 'editor' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'"
+        @click="activeTab = 'editor'"
+      >
+        <EditOutlined class="text-xl mb-0.5" />
+        <span class="text-xs font-medium">Editor</span>
+      </div>
+      <div 
+        class="flex flex-col items-center justify-center w-full h-full cursor-pointer transition-colors"
+        :class="activeTab === 'preview' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'"
+        @click="activeTab = 'preview'"
+      >
+        <EyeOutlined class="text-xl mb-0.5" />
+        <span class="text-xs font-medium">Preview</span>
       </div>
     </div>
-  </div>
+  </a-layout>
 </template>
 
 <style>
@@ -285,7 +272,4 @@ onUnmounted(() => {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #94a3b8;
 }
-</style>
-
-<style scoped>
 </style>
