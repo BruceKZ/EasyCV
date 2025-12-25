@@ -245,7 +245,7 @@ onUnmounted(() => {
         @click="activeTab = 'editor'"
       >
         <EditOutlined class="text-xl mb-0.5" />
-        <span class="text-xs font-medium">Editor</span>
+        <span class="text-xs font-medium">{{ $t('app.editor') }}</span>
       </div>
       <div 
         class="flex flex-col items-center justify-center w-full h-full cursor-pointer transition-colors"
@@ -253,7 +253,7 @@ onUnmounted(() => {
         @click="activeTab = 'preview'"
       >
         <EyeOutlined class="text-xl mb-0.5" />
-        <span class="text-xs font-medium">Preview</span>
+        <span class="text-xs font-medium">{{ $t('app.preview') }}</span>
       </div>
     </div>
   </a-layout>

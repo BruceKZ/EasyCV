@@ -10,7 +10,9 @@ export default {
     switchLanguage: '切换语言',
     clearConfirm: '确定要清空所有数据吗?请确保您已保存当前数据到 JSON 文件。',
     exportFailed: '导出 PDF 失败,请重试',
-    importFailed: '解析 JSON 失败'
+    importFailed: '解析 JSON 失败',
+    editor: '编辑器',
+    preview: '预览'
   },
   editor: {
     sections: {

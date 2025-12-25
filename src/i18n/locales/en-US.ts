@@ -10,7 +10,9 @@ export default {
     switchLanguage: 'Switch Language',
     clearConfirm: 'Are you sure you want to clear all data? Please make sure you have saved your current data to a JSON file.',
     exportFailed: 'Failed to export PDF, please try again',
-    importFailed: 'Failed to parse JSON'
+    importFailed: 'Failed to parse JSON',
+    editor: 'Editor',
+    preview: 'Preview'
   },
   editor: {
     sections: {
