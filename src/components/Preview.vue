@@ -95,7 +95,7 @@ watch(() => [store.resumeData, store.sectionOrder, locale.value], () => {
       class="w-full mb-4"
     />
     
-    <a-spin :spinning="loading" tip="Rendering..." class="w-full">
+    <a-spin :spinning="loading" class="w-full">
       <div class="preview-content">
         <div v-html="compiledContent" class="preview-svg"></div>
       </div>
