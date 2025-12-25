@@ -17,10 +17,14 @@ const initTypst = async () => {
   $typst.setCompilerInitOptions({
     beforeBuild: [
       loadFonts([
+        // Font Awesome icons
         'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.ttf',
         'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-brands-400.ttf',
-        'https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.0.12/files/noto-serif-sc-chinese-simplified-400-normal.woff',
-        'https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.0.12/files/noto-serif-sc-chinese-simplified-700-normal.woff'
+        // Full Noto Serif CJK SC fonts from Google/Adobe's official noto-cjk repository
+        // These contain the complete CJK character set including rare characters like "烬"
+        // Using raw.githubusercontent.com as it supports large font files
+        'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Serif/OTF/SimplifiedChinese/NotoSerifCJKsc-Regular.otf',
+        'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Serif/OTF/SimplifiedChinese/NotoSerifCJKsc-Bold.otf'
       ], {
         assets: ['text', 'cjk']
       })

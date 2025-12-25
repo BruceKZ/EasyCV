@@ -58,6 +58,7 @@
 #let chicv(body) = {
     let fonts = (
         "Palatino",
+        "Noto Serif CJK SC",
         "Source Han Serif SC",
         "Noto Serif SC",
     )
