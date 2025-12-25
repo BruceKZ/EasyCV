@@ -82,16 +82,54 @@ watch(() => [store.resumeData, store.sectionOrder, locale.value], () => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center">
-    <div v-if="error" class="w-full p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 mb-4">
-      {{ error }}
-    </div>
+  <div class="preview-container">
+    <a-alert
+      v-if="error"
+      :message="error"
+      type="error"
+      show-icon
+      class="w-full mb-4"
+    />
     
-    <div class="relative bg-white shadow-lg flex flex-col">
-      <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <a-spin :spinning="loading" tip="Rendering..." class="w-full">
+      <div class="preview-content">
+        <div v-html="compiledContent" class="preview-svg"></div>
       </div>
-      <div v-html="compiledContent"></div>
-    </div>
+    </a-spin>
   </div>
 </template>
+
+<style scoped>
+.preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-content {
+  position: relative;
+  background: white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.preview-svg {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.preview-svg :deep(svg) {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+  display: block;
+}
+</style>
