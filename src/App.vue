@@ -162,11 +162,13 @@ onUnmounted(() => {
   <a-layout class="h-screen overflow-hidden">
     <!-- Header -->
     <a-layout-header :style="{ background: '#fff', padding: '0 16px' }" class="border-b border-gray-200 flex justify-between items-center z-20 h-14 leading-none">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 bg-[#3B5FE9] rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-sm">
           CV
         </div>
-        <h1 class="text-xl font-bold tracking-tight text-gray-800 m-0 leading-none h-8 flex items-center">{{ $t('app.title') }}</h1>
+        <h1 class="text-xl font-bold tracking-tight m-0 leading-none h-8 flex items-center translate-y-1">
+          <span class="text-[#2D3748]">Easy</span><span class="text-[#3B5FE9]">CV</span>
+        </h1>
       </div>
       
       <div class="flex items-center gap-2">
