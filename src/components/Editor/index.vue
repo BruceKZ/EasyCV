@@ -8,10 +8,11 @@ import Projects from './Projects.vue'
 import Skills from './Skills.vue'
 import Misc from './Misc.vue'
 import Awards from './Awards.vue'
+import Config from './Config.vue'
 import { 
   UserOutlined, ReadOutlined, SolutionOutlined, ProjectOutlined, 
   CodeOutlined, TrophyOutlined, EllipsisOutlined, HolderOutlined,
-  DownOutlined, RightOutlined
+  DownOutlined, RightOutlined, SettingOutlined
 } from '@ant-design/icons-vue'
 import { useResumeStore } from '../../stores/resume'
 
@@ -54,6 +55,7 @@ const sectionDefinitions = {
   skills: { id: 'skills', labelKey: 'editor.sections.skills', icon: CodeOutlined, component: Skills },
   awards: { id: 'awards', labelKey: 'editor.sections.awards', icon: TrophyOutlined, component: Awards },
   misc: { id: 'misc', labelKey: 'editor.sections.misc', icon: EllipsisOutlined, component: Misc },
+  settings: { id: 'settings', labelKey: 'editor.settings.title', icon: SettingOutlined, component: Config },
 }
 
 const fixedSection = sectionDefinitions.basics
@@ -137,6 +139,27 @@ const draggableList = computed({
         </div>
       </a-card>
     </VueDraggable>
+
+    <a-card 
+      :bordered="false" 
+      class="shadow-sm transition-all duration-200 !bg-white"
+      :class="{ 'ring-2 ring-blue-100': isSectionActive('settings') }"
+      :bodyStyle="{ padding: 0 }"
+    >
+      <div 
+        class="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer"
+        @click="toggleSection('settings', $event)"
+      >
+        <div class="flex items-center gap-3 flex-1">
+          <SettingOutlined :style="{ color: isSectionActive('settings') ? '#2563eb' : '#4b5563', fontSize: '18px' }" />
+          <span class="font-semibold text-gray-700">{{ $t('editor.settings.title') }}</span>
+        </div>
+        <component :is="isSectionActive('settings') ? DownOutlined : RightOutlined" class="text-xs text-gray-400"/>
+      </div>
+      <div v-show="isSectionActive('settings')" class="border-t border-gray-100 bg-gray-50/30 p-5">
+        <Config />
+      </div>
+    </a-card>
   </div>
 </template>
 

@@ -17,6 +17,11 @@ export async function compileResume(templateName: string, data: ResumeData, sect
   // 2. Inline fontawesome into chicv
   chicv = chicv.replace('#import "fontawesome.typ": *', fontawesome)
 
+  // 2.5 Handle page numbers
+  if (data.settings?.showPageNumbers === false) {
+    chicv = chicv.replace('numbering: "1 / 1"', 'numbering: none')
+  }
+
   // 3. Inline chicv into cv_template
   cvTemplate = cvTemplate.replace('#import "chicv.typ": *', chicv)
 

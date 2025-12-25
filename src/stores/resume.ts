@@ -45,6 +45,9 @@ export interface ResumeData {
   skills: Skill[]
   misc: string[]
   awards: string[]
+  settings: {
+    showPageNumbers: boolean
+  }
 }
 
 const emptyData: ResumeData = {
@@ -62,7 +65,10 @@ const emptyData: ResumeData = {
   open_source: [],
   skills: [],
   misc: [],
-  awards: []
+  awards: [],
+  settings: {
+    showPageNumbers: true
+  }
 }
 
 const defaultData: ResumeData = emptyData
@@ -74,7 +80,15 @@ export const useResumeStore = defineStore('resume', () => {
   const savedData = localStorage.getItem('resumeData')
   if (savedData) {
     try {
-      resumeData.value = JSON.parse(savedData)
+      const parsed = JSON.parse(savedData)
+      resumeData.value = {
+        ...JSON.parse(JSON.stringify(emptyData)),
+        ...parsed,
+        settings: {
+          ...emptyData.settings,
+          ...(parsed.settings || {})
+        }
+      }
     } catch (e) {
       console.error('Failed to load resume data from localStorage', e)
     }
@@ -100,6 +114,7 @@ export const useResumeStore = defineStore('resume', () => {
     resumeData.value.skills = []
     resumeData.value.misc = []
     resumeData.value.awards = []
+    resumeData.value.settings = JSON.parse(JSON.stringify(emptyData.settings))
   }
 
   const missingKeys = ref<Set<string>>(new Set())

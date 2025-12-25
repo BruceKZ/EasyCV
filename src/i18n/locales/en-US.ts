@@ -75,6 +75,10 @@ export default {
     misc: {
       item: 'Item',
       addMisc: 'Add Misc Item'
+    },
+    settings: {
+      title: 'Settings',
+      showPageNumbers: 'Show Page Numbers'
     }
   },
   common: {

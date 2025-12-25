@@ -75,6 +75,10 @@ export default {
     misc: {
       item: '内容',
       addMisc: '添加其他项'
+    },
+    settings: {
+      title: '设置',
+      showPageNumbers: '显示页码'
     }
   },
   common: {
