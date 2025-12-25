@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
-import { DeleteOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, PlusOutlined, CloseOutlined, HolderOutlined } from '@ant-design/icons-vue'
+import { VueDraggable } from 'vue-draggable-plus'
 import { useI18n } from 'vue-i18n'
 
 const store = useResumeStore()
@@ -119,16 +120,21 @@ const setIsPresent = (index: number, value: boolean) => {
         </a-form-item>
 
         <a-form-item :label="$t('editor.education.details')">
-          <div v-for="(_detail, dIndex) in edu.details" :key="dIndex" class="flex gap-2 items-start mb-2">
-            <a-textarea 
-              v-model:value="edu.details[dIndex]" 
-              :auto-size="{ minRows: 2, maxRows: 6 }"
-              placeholder="Detail" 
-            />
-            <a-button type="text" danger size="small" @click="removeDetail(index, dIndex)">
-              <template #icon><CloseOutlined /></template>
-            </a-button>
-          </div>
+          <VueDraggable v-model="edu.details" handle=".handle" class="flex flex-col gap-2 mb-2">
+            <div v-for="(_detail, dIndex) in edu.details" :key="dIndex" class="flex gap-2 items-start">
+              <div class="handle cursor-move mt-2 text-gray-400 hover:text-gray-600">
+                <HolderOutlined />
+              </div>
+              <a-textarea 
+                v-model:value="edu.details[dIndex]" 
+                :auto-size="{ minRows: 2, maxRows: 6 }"
+                placeholder="Detail" 
+              />
+              <a-button type="text" danger size="small" @click="removeDetail(index, dIndex)">
+                <template #icon><CloseOutlined /></template>
+              </a-button>
+            </div>
+          </VueDraggable>
           <a-button type="dashed" size="small" block @click="addDetail(index)">
             <template #icon><PlusOutlined /></template>
             {{ $t('editor.education.addDetail') }}

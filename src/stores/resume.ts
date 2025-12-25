@@ -36,6 +36,7 @@ export interface ResumeData {
     website: string
     github: string
     phone: string
+    linkedin: string
   }
   education: Education[]
   work: WorkExperience[]
@@ -56,7 +57,8 @@ const emptyData: ResumeData = {
     email: '',
     website: '',
     github: '',
-    phone: ''
+    phone: '',
+    linkedin: ''
   },
   education: [],
   work: [],

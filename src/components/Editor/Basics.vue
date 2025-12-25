@@ -32,6 +32,11 @@ const store = useResumeStore()
           <a-input v-model:value="store.resumeData.basics.github" placeholder="username" />
         </a-form-item>
       </a-col>
+      <a-col :span="24" :md="12">
+        <a-form-item label="LinkedIn" :validate-status="store.missingKeys.has('linkedin') ? 'error' : ''">
+          <a-input v-model:value="store.resumeData.basics.linkedin" placeholder="linkedin.com/in/username" />
+        </a-form-item>
+      </a-col>
     </a-row>
   </a-form>
 </template>

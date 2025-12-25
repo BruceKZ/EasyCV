@@ -68,10 +68,17 @@
             tl: name,
             bl: description,
             br: tech_stack,
-            tr: if link != "" and link != none { eval(link, mode: "markup", scope: scope) } else { none },
+            tr: if link != "" and link != none {
+                if link.starts-with("https://github.com/") {
+                    let repo = link.replace("https://github.com/", "")
+                    ghrepo(repo)
+                } else {
+                    eval(link, mode: "markup", scope: scope)
+                }
+            } else { none },
         )[
             #if details != none and details != () {
-                eval(details.join("\n"), mode: "markup", scope: scope)
+                eval(details.map(d => "- " + d).join("\n"), mode: "markup", scope: scope)
             }
         ]
     }
@@ -108,7 +115,7 @@
             let value = s.at("value", default: "")
             if key != "" and key != none {
                 (
-                    eval(key, mode: "markup", scope: scope),
+                    strong(eval(key, mode: "markup", scope: scope)),
                     eval(value, mode: "markup", scope: scope)
                 )
             } else {
@@ -125,7 +132,7 @@
 
     let awards = private_info.at("awards", default: ())
     if awards != none and awards != () {
-        eval(awards.join("\n"), mode: "markup", scope: scope)
+        eval(awards.map(a => "- " + a).join("\n"), mode: "markup", scope: scope)
     }
   }
 }
@@ -134,7 +141,7 @@
   if private_info.at("misc", default: ()).len() > 0 {
     [== #fa[#th.list] #labels.misc]
 
-    eval(private_info.at("misc", default: ()).join("\n"), mode: "markup", scope: scope)
+    eval(private_info.at("misc", default: ()).map(m => "- " + m).join("\n"), mode: "markup", scope: scope)
   }
 }
 
@@ -149,6 +156,7 @@
   let resume_email = basics.at("email", default: "")
   let resume_github = basics.at("github", default: "")
   let resume_website = basics.at("website", default: "")
+  let resume_linkedin = basics.at("linkedin", default: "")
 
   let scope = (
       redact: redact,
@@ -161,6 +169,7 @@
       envelope: envelope,
       github: github,
       globe: globe,
+      linkedin: linkedin,
       graduation-cap: graduation-cap,
       briefcase: briefcase,
       project-diagram: project-diagram,
@@ -179,6 +188,7 @@
   if resume_email != "" { contact_info.push([#fa[#envelope] #resume_email]) }
   if resume_github != "" { contact_info.push([#fa[#github] #link("https://github.com/" + resume_github)[#resume_github]]) }
   if resume_website != "" { contact_info.push([#fa[#globe] #link("https://" + resume_website)[#resume_website]]) }
+  if resume_linkedin != "" { contact_info.push([#fa[#linkedin] #link("https://" + resume_linkedin)[#resume_linkedin]]) }
 
   contact_info.join(" | ")
 

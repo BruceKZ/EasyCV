@@ -75,13 +75,24 @@ const updatePreview = async () => {
   }
 }
 
+let debounceTimer: number | null = null
+
+const debouncedUpdatePreview = () => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+  debounceTimer = setTimeout(() => {
+    updatePreview()
+  }, 1000)
+}
+
 onMounted(async () => {
   await initTypst()
   updatePreview()
 })
 
 watch(() => [store.resumeData, store.sectionOrder, locale.value], () => {
-  updatePreview()
+  debouncedUpdatePreview()
 }, { deep: true })
 </script>
 
