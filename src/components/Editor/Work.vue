@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
-import { Trash2, Plus, X } from 'lucide-vue-next'
+import { DeleteOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons-vue'
 import { useI18n } from 'vue-i18n'
 
 const store = useResumeStore()
@@ -67,121 +67,85 @@ const setIsPresent = (index: number, value: boolean) => {
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div 
+  <div class="space-y-4">
+    <a-card 
       v-for="(work, index) in store.resumeData.work" 
       :key="index" 
-      class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm relative group hover:border-blue-300 transition-colors"
+      class="shadow-sm hover:shadow-md transition-shadow"
+      :bodyStyle="{ padding: '16px' }"
     >
-      <button 
-        @click="removeWork(index)" 
-        class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50"
-        title="Remove Work Experience"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="col-span-1 md:col-span-2 space-y-1">
-            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.work.company') }}</label>
-            <input 
-              v-model="work.company" 
-              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
-              :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('company') }"
-              placeholder="Company Name"
-            />
-        </div>
+      <template #extra>
+        <a-button type="text" danger @click="removeWork(index)">
+          <template #icon><DeleteOutlined /></template>
+        </a-button>
+      </template>
 
-        <div class="space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.work.team') }}</label>
-          <input 
-            v-model="work.team" 
-            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
-            :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('team') }"
-            placeholder="Team Name"
-          />
-        </div>
-        
-        <div class="space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.work.role') }}</label>
-          <input 
-            v-model="work.role" 
-            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
-            :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('role') }"
-            placeholder="Role"
-          />
-        </div>
-      </div>
-      
-      <div class="mb-4 space-y-1">
-        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.work.time') }}</label>
-        <div class="flex items-center gap-2">
-          <input 
-            type="month"
-            :value="getStartDate(index)"
-            @input="e => setStartDate(index, (e.target as HTMLInputElement).value)"
-            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors"
-            :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('time') }"
-          />
-          <span class="text-gray-500">-</span>
-          <div class="relative flex-1">
+      <a-form layout="vertical">
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <a-form-item :label="$t('editor.work.company')" :validate-status="store.missingKeys.has('company') ? 'error' : ''">
+              <a-input v-model:value="work.company" placeholder="Company Name" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24" :md="12">
+            <a-form-item :label="$t('editor.work.team')" :validate-status="store.missingKeys.has('team') ? 'error' : ''">
+              <a-input v-model:value="work.team" placeholder="Team Name" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24" :md="12">
+            <a-form-item :label="$t('editor.work.role')" :validate-status="store.missingKeys.has('role') ? 'error' : ''">
+              <a-input v-model:value="work.role" placeholder="Role" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-form-item :label="$t('editor.work.time')" :validate-status="store.missingKeys.has('time') ? 'error' : ''">
+          <div class="flex items-center gap-2 flex-wrap">
+            <input 
+              type="month"
+              :value="getStartDate(index)"
+              @input="(e: Event) => setStartDate(index, (e.target as HTMLInputElement).value)"
+              class="ant-input w-auto"
+            />
+            <span class="text-gray-500">-</span>
             <input 
               type="month"
               :value="getEndDate(index)"
-              @input="e => setEndDate(index, (e.target as HTMLInputElement).value)"
+              @input="(e: Event) => setEndDate(index, (e.target as HTMLInputElement).value)"
               :disabled="getIsPresent(index)"
-              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors disabled:bg-gray-100 disabled:text-gray-400"
-              :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('time') }"
+              class="ant-input w-auto disabled:bg-gray-100 disabled:text-gray-400"
             />
-          </div>
-          <div class="flex items-center gap-2 min-w-fit">
-            <input 
-              type="checkbox" 
+            <a-checkbox 
               :checked="getIsPresent(index)"
-              @change="e => setIsPresent(index, (e.target as HTMLInputElement).checked)"
-              class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              :id="'present-work-' + index"
-            />
-            <label :for="'present-work-' + index" class="text-sm text-gray-700 select-none">{{ $t('editor.work.present') }}</label>
+              @change="(e: Event) => setIsPresent(index, (e.target as HTMLInputElement).checked)"
+            >
+              {{ $t('editor.work.present') }}
+            </a-checkbox>
           </div>
-        </div>
-      </div>
+        </a-form-item>
 
-      <div class="space-y-2">
-        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.work.details') }}</label>
-        <div v-for="(_detail, dIndex) in work.details" :key="dIndex" class="flex gap-2 items-start group/detail">
-           <div class="flex-1 space-y-2">
-             <textarea 
-               v-model="work.details[dIndex]" 
-               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors resize-y" 
-               rows="2"
-               wrap="soft"
-               style="white-space: pre-wrap; overflow-wrap: break-word; word-wrap: break-word;"
-               placeholder="Detail" 
-             ></textarea>
-           </div>
-           <button 
-             @click="removeDetail(index, dIndex)" 
-             class="text-gray-400 hover:text-red-500 p-1 rounded hover:bg-red-50 mt-2 opacity-0 group-hover/detail:opacity-100 transition-all"
-             title="Remove Detail"
-           >
-             <X class="w-4 h-4" />
-           </button>
-        </div>
-        <button 
-          @click="addDetail(index)" 
-          class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 mt-2 px-2 py-1 rounded hover:bg-blue-50 transition-colors w-fit"
-        >
-          <Plus class="w-4 h-4" /> {{ $t('editor.work.addDetail') }}
-        </button>
-      </div>
-    </div>
+        <a-form-item :label="$t('editor.work.details')">
+          <div v-for="(_detail, dIndex) in work.details" :key="dIndex" class="flex gap-2 items-start mb-2">
+            <a-textarea 
+              v-model:value="work.details[dIndex]" 
+              :auto-size="{ minRows: 2, maxRows: 6 }"
+              placeholder="Detail" 
+            />
+            <a-button type="text" danger size="small" @click="removeDetail(index, dIndex)">
+              <template #icon><CloseOutlined /></template>
+            </a-button>
+          </div>
+          <a-button type="dashed" size="small" block @click="addDetail(index)">
+            <template #icon><PlusOutlined /></template>
+            {{ $t('editor.work.addDetail') }}
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </a-card>
     
-    <button 
-      @click="addWork" 
-      class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-medium"
-    >
-      <Plus class="w-5 h-5" /> {{ $t('editor.work.addWork') }}
-    </button>
+    <a-button type="dashed" block @click="addWork" class="py-4 h-auto">
+      <template #icon><PlusOutlined /></template>
+      {{ $t('editor.work.addWork') }}
+    </a-button>
   </div>
 </template>

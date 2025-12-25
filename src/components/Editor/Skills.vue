@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
-import { Trash2, Plus } from 'lucide-vue-next'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 
 const store = useResumeStore()
 
@@ -18,50 +18,41 @@ const removeSkill = (index: number) => {
 
 <template>
   <div class="space-y-4">
-    <div 
+    <a-card 
       v-for="(skill, index) in store.resumeData.skills" 
       :key="index" 
-      class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm relative group hover:border-blue-300 transition-colors"
+      class="shadow-sm hover:shadow-md transition-shadow"
+      :bodyStyle="{ padding: '16px' }"
     >
-      <button 
-        @click="removeSkill(index)" 
-        class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50"
-        title="Remove Skill Category"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.skills.category') }}</label>
-          <input 
-            v-model="skill.key" 
-            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
-            :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('key') }"
-            placeholder="Programming Languages"
-          />
-        </div>
-        
-        <div class="col-span-1 md:col-span-2 space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.skills.items') }}</label>
-          <textarea 
-            v-model="skill.value" 
-            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors resize-y" 
-            :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('value') }"
-            rows="2"
-            wrap="soft"
-            style="white-space: pre-wrap; overflow-wrap: break-word; word-wrap: break-word;"
-            placeholder="C++, Rust, Python..."
-          ></textarea>
-        </div>
-      </div>
-    </div>
+      <template #extra>
+        <a-button type="text" danger @click="removeSkill(index)">
+          <template #icon><DeleteOutlined /></template>
+        </a-button>
+      </template>
+
+      <a-form layout="vertical">
+        <a-row :gutter="16">
+          <a-col :span="24" :md="12">
+            <a-form-item :label="$t('editor.skills.category')" :validate-status="store.missingKeys.has('key') ? 'error' : ''">
+              <a-input v-model:value="skill.key" placeholder="Programming Languages" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24" :md="12">
+            <a-form-item :label="$t('editor.skills.items')" :validate-status="store.missingKeys.has('value') ? 'error' : ''">
+              <a-textarea 
+                v-model:value="skill.value" 
+                :auto-size="{ minRows: 2, maxRows: 6 }"
+                placeholder="C++, Rust, Python..." 
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-card>
     
-    <button 
-      @click="addSkill" 
-      class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-medium"
-    >
-      <Plus class="w-5 h-5" /> {{ $t('editor.skills.addSkill') }}
-    </button>
+    <a-button type="dashed" block @click="addSkill" class="py-4 h-auto">
+      <template #icon><PlusOutlined /></template>
+      {{ $t('editor.skills.addSkill') }}
+    </a-button>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useResumeStore } from '../../stores/resume'
-import { Trash2, Plus, X } from 'lucide-vue-next'
+import { DeleteOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons-vue'
 import { useI18n } from 'vue-i18n'
 
 const store = useResumeStore()
@@ -66,111 +66,80 @@ const setIsPresent = (index: number, value: boolean) => {
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div 
+  <div class="space-y-4">
+    <a-card 
       v-for="(edu, index) in store.resumeData.education" 
       :key="index" 
-      class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm relative group hover:border-blue-300 transition-colors"
+      class="shadow-sm hover:shadow-md transition-shadow"
+      :bodyStyle="{ padding: '16px' }"
     >
-      <button 
-        @click="removeEducation(index)" 
-        class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50"
-        title="Remove Education"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <template #extra>
+        <a-button type="text" danger @click="removeEducation(index)">
+          <template #icon><DeleteOutlined /></template>
+        </a-button>
+      </template>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.education.school') }}</label>
-          <input 
-            v-model="edu.school" 
-            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
-            :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('school') }"
-            placeholder="University Name"
-          />
-        </div>
-        
-        <div class="space-y-1">
-          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.education.degree') }}</label>
-          <input 
-            v-model="edu.degree" 
-            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors" 
-            :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('degree') }"
-            placeholder="Degree"
-          />
-        </div>
-      </div>
-      
-      <div class="mb-4 space-y-1">
-        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.education.time') }}</label>
-        <div class="flex items-center gap-2">
-          <input 
-            type="month"
-            :value="getStartDate(index)"
-            @input="e => setStartDate(index, (e.target as HTMLInputElement).value)"
-            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors"
-            :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('time') }"
-          />
-          <span class="text-gray-500">-</span>
-          <div class="relative flex-1">
+      <a-form layout="vertical">
+        <a-row :gutter="16">
+          <a-col :span="24" :md="12">
+            <a-form-item :label="$t('editor.education.school')" :validate-status="store.missingKeys.has('school') ? 'error' : ''">
+              <a-input v-model:value="edu.school" placeholder="University Name" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24" :md="12">
+            <a-form-item :label="$t('editor.education.degree')" :validate-status="store.missingKeys.has('degree') ? 'error' : ''">
+              <a-input v-model:value="edu.degree" placeholder="Degree" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-form-item :label="$t('editor.education.time')" :validate-status="store.missingKeys.has('time') ? 'error' : ''">
+          <div class="flex items-center gap-2 flex-wrap">
+            <input 
+              type="month"
+              :value="getStartDate(index)"
+              @input="(e: Event) => setStartDate(index, (e.target as HTMLInputElement).value)"
+              class="ant-input w-auto"
+            />
+            <span class="text-gray-500">-</span>
             <input 
               type="month"
               :value="getEndDate(index)"
-              @input="e => setEndDate(index, (e.target as HTMLInputElement).value)"
+              @input="(e: Event) => setEndDate(index, (e.target as HTMLInputElement).value)"
               :disabled="getIsPresent(index)"
-              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors disabled:bg-gray-100 disabled:text-gray-400"
-              :class="{ '!border-red-500 !ring-red-500': store.missingKeys.has('time') }"
+              class="ant-input w-auto disabled:bg-gray-100 disabled:text-gray-400"
             />
-          </div>
-          <div class="flex items-center gap-2 min-w-fit">
-            <input 
-              type="checkbox" 
+            <a-checkbox 
               :checked="getIsPresent(index)"
-              @change="e => setIsPresent(index, (e.target as HTMLInputElement).checked)"
-              class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              :id="'present-edu-' + index"
-            />
-            <label :for="'present-edu-' + index" class="text-sm text-gray-700 select-none">{{ $t('editor.education.present') }}</label>
+              @change="(e: Event) => setIsPresent(index, (e.target as HTMLInputElement).checked)"
+            >
+              {{ $t('editor.education.present') }}
+            </a-checkbox>
           </div>
-        </div>
-      </div>
+        </a-form-item>
 
-      <div class="space-y-2">
-        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('editor.education.details') }}</label>
-        <div v-for="(_detail, dIndex) in edu.details" :key="dIndex" class="flex gap-2 items-start group/detail">
-           <div class="flex-1 space-y-2">
-             <textarea 
-               v-model="edu.details[dIndex]" 
-               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border transition-colors resize-y" 
-               rows="2"
-               wrap="soft"
-               style="white-space: pre-wrap; overflow-wrap: break-word; word-wrap: break-word;"
-               placeholder="Detail" 
-             ></textarea>
-           </div>
-           <button 
-             @click="removeDetail(index, dIndex)" 
-             class="text-gray-400 hover:text-red-500 p-1 rounded hover:bg-red-50 mt-2 opacity-0 group-hover/detail:opacity-100 transition-all"
-             title="Remove Detail"
-           >
-             <X class="w-4 h-4" />
-           </button>
-        </div>
-        <button 
-          @click="addDetail(index)" 
-          class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 mt-2 px-2 py-1 rounded hover:bg-blue-50 transition-colors w-fit"
-        >
-          <Plus class="w-4 h-4" /> {{ $t('editor.education.addDetail') }}
-        </button>
-      </div>
-    </div>
+        <a-form-item :label="$t('editor.education.details')">
+          <div v-for="(_detail, dIndex) in edu.details" :key="dIndex" class="flex gap-2 items-start mb-2">
+            <a-textarea 
+              v-model:value="edu.details[dIndex]" 
+              :auto-size="{ minRows: 2, maxRows: 6 }"
+              placeholder="Detail" 
+            />
+            <a-button type="text" danger size="small" @click="removeDetail(index, dIndex)">
+              <template #icon><CloseOutlined /></template>
+            </a-button>
+          </div>
+          <a-button type="dashed" size="small" block @click="addDetail(index)">
+            <template #icon><PlusOutlined /></template>
+            {{ $t('editor.education.addDetail') }}
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </a-card>
     
-    <button 
-      @click="addEducation" 
-      class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-medium"
-    >
-      <Plus class="w-5 h-5" /> {{ $t('editor.education.addEducation') }}
-    </button>
+    <a-button type="dashed" block @click="addEducation" class="py-4 h-auto">
+      <template #icon><PlusOutlined /></template>
+      {{ $t('editor.education.addEducation') }}
+    </a-button>
   </div>
 </template>
